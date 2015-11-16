@@ -31,7 +31,38 @@ public class No {
 	}
 	
 	public void addFilha(No no) {
-		this.filhos.add(no);
+		if(!filhos.contains(no)) {
+			this.filhos.add(no);
+		}
+		else {
+			System.out.println("pasta já existente!");
+		}
+	}
+	
+	public void removeFilha(No no) {
+		this.filhos.remove(no);
+	}
+
+	@Override
+	public String toString() {
+		return "No [conteudo=" + conteudo + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		No other = (No) obj;
+		if (conteudo == null) {
+			if (other.conteudo != null)
+				return false;
+		} else if (!conteudo.equals(other.conteudo))
+			return false;
+		return true;
 	}
 
 	public void mostraNo() {          

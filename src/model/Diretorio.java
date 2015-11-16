@@ -10,14 +10,6 @@ public class Diretorio extends Conteudo{
 		this.nome = name;
 	}
 
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
 	public List<Conteudo> getConteudo() {
 		return conteudo;
 	}
