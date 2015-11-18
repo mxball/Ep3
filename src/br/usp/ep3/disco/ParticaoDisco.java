@@ -23,7 +23,7 @@ public class ParticaoDisco {
 		randomAccessFile.write(conteudo);
 		randomAccessFile.close();
 	}
-	
+
 	public void escreveNoRoot(String nomeArquivo, Integer posicao) throws IOException {
 		arquivoBinario = new File("arquivoBinario2");	
 		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
@@ -42,12 +42,13 @@ public class ParticaoDisco {
 //				break;
 //			}
 //		}
-		ByteBuffer buffer = ByteBuffer.allocate(12);
+		ByteBuffer buffer = ByteBuffer.allocate(10);
 		for (byte b : nomeArquivo.getBytes()) {
 			buffer.put(b);
 		}
-		buffer.put(posicao.toString().getBytes());
-		System.out.println(new String(buffer.array()));
+		byte[] bytesDaPosicao = get2BytesDaPosicao(posicao);
+		buffer.put(8, bytesDaPosicao[0]);
+		buffer.put(9, bytesDaPosicao[1]);
 		randomAccessFile.write(buffer.array());
 		randomAccessFile.close();
 	}
@@ -63,35 +64,44 @@ public class ParticaoDisco {
 		randomAccessFile.close();
 	}
 
-	public String leRoot(String string) throws IOException {
+	public int leRoot(String nomeArquivo) throws IOException {
 		arquivoBinario = new File("arquivoBinario2");	
 		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 		randomAccessFile.seek(0);
-		byte[] lido = new byte[12];
+		byte[] lido = new byte[10];
 		randomAccessFile.read(lido);
-		System.out.println("Lido ==== " + new String(lido));
-		ByteBuffer buffer = ByteBuffer.allocate(8);
-		for (int i = 0; i < 8; i++) {
-			buffer.put(lido[i]);
+		
+		byte[] nomeBytes = new byte[8];
+		byte[] posicaoBytes = new byte[2];
+		System.arraycopy(lido, 0, nomeBytes, 0, nomeBytes.length);
+		System.arraycopy(lido, 8, posicaoBytes, 0, posicaoBytes.length);
+		if(nomeArquivo.equals(new String(nomeBytes))) {
+			return getPosicaoDe2Bytes(posicaoBytes);
 		}
-		System.out.println(new String(buffer.array()));
-		if(string.equals(new String(buffer.array()))) {
-			ByteBuffer posicao = ByteBuffer.allocate(1);
-			posicao.put(lido[8]);
-			return new String(posicao.array());
-		}
-		return "-1";
+		return -1;
 	}
 
 	public String leBloco(int i) throws IOException {
-		System.out.println(i);
 		arquivoBinario = new File("arquivoBinario2");	
 		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
-		randomAccessFile.seek(1*4000);
+		randomAccessFile.seek(i*4000);
 		byte[] b = new byte[4000];
 		randomAccessFile.read(b);
 		randomAccessFile.close();
 		return new String(b);
 	}
+
+	private byte[] get2BytesDaPosicao(int posicao) {
+		byte[] bytes = new byte[2];
+		bytes[0] = (byte)(posicao & 0xFF);
+		bytes[1] = (byte)((posicao >> 8) & 0xFF);
+		return bytes;
+	}
 	
+	private int getPosicaoDe2Bytes(byte[] doisBytes) {
+		int high = doisBytes[1] >= 0 ? doisBytes[1] : 256 + doisBytes[1];
+		int low = doisBytes[0] >= 0 ? doisBytes[0] : 256 + doisBytes[0];
+		int posicao = low | (high << 8);
+		return  posicao;
+	}
 }

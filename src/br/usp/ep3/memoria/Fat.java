@@ -38,14 +38,23 @@ public class Fat {
 				this.tabelaFat[posicaoAnterior] = posicaoLivre;
 			}
 			posicaoAnterior = posicaoLivre;
+			bloco = new byte[4000];
 			numeroBytes = inputStream.read(bloco);
 		}
+		this.tabelaFat[posicaoAnterior] = -2;
+		System.out.println("Escrevento " + nomeArquivo + " " + primeiro);
 		this.particaoDisco.escreveNoRoot(nomeArquivo, primeiro);
 		inputStream.close();
 	}
 
 	public void buscaArquivo(String string) throws IOException {
-		String i = this.particaoDisco.leRoot(string);
-		this.particaoDisco.leBloco(1);
+		int i = this.particaoDisco.leRoot(string);
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(this.particaoDisco.leBloco(i));
+		while(this.tabelaFat[i] != -2) {
+			i = this.tabelaFat[i];
+			buffer.append(this.particaoDisco.leBloco(i));
+		}
+		System.out.println(buffer.toString());
 	}
 }
