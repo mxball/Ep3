@@ -8,10 +8,14 @@ import java.util.Scanner;
 
 import arvore.Arvore;
 import arvore.No;
+import br.usp.ep3.Bitmap;
+import br.usp.ep3.disco.ParticaoDisco;
+import br.usp.ep3.exceptions.SemEspacoException;
+import br.usp.ep3.memoria.Fat;
 
 public class testa {
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, SemEspacoException {
 //		new File("teste2").mkdir();
 //		Gerenciador gerenciador = new Gerenciador("teste");
 //		gerenciador.println("Testando");
@@ -20,6 +24,11 @@ public class testa {
 		FileOutputStream os = new FileOutputStream("arquivo");
 		OutputStreamWriter osw = new OutputStreamWriter(os);
 		BufferedWriter bw = new BufferedWriter(osw);
+		
+		ParticaoDisco disco = new ParticaoDisco();
+		Fat fat = new Fat(disco);
+		Bitmap bitmap = new Bitmap();
+		
 		Arvore arvore = new Arvore();
 		Diretorio root = new Diretorio("root");
 		No no = new No(root);
@@ -49,8 +58,10 @@ public class testa {
 				case "imprime":
 					arvore.printArvore();
 					break;
-				case "cp":	
-				case "cat":	
+				case "cp":
+					fat.armazenaArquivo("teste.txt", bitmap);
+					break;
+				case "cat":
 				case "touch":
 					arvore.insereArquivo(strings[1]);
 					break;

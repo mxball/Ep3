@@ -12,13 +12,15 @@ public class ParticaoDisco {
 	private RandomAccessFile randomAccessFile;
 	
 	public ParticaoDisco() throws FileNotFoundException {
-		arquivoBinario = new File("arquivoBinario");
-		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 	}
 	
 	public void escreveBloco(byte[] conteudo, int posicaoConteudo) throws IOException {
-		int posicaoArquivo = posicaoConteudo * 4000;
-		randomAccessFile.write(conteudo, 0, posicaoArquivo);
+		arquivoBinario = new File("arquivoBinario2");
+		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
+		int posicaoArquivo =  posicaoConteudo * 4000;
+		randomAccessFile.seek(posicaoArquivo);
+		randomAccessFile.write(conteudo);
+		randomAccessFile.close();
 	}
 	
 }

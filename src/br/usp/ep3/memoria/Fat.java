@@ -27,7 +27,9 @@ public class Fat {
 		byte[] bloco = new byte[4000];
 		int numeroBytes = inputStream.read(bloco);
 		while(numeroBytes > 0) {
+			System.out.println(numeroBytes);
 			int posicaoLivre = bitmap.procuraPosicaoLivre();
+			System.out.println(posicaoLivre);
 			this.particaoDisco.escreveBloco(bloco, posicaoLivre);
 			bitmap.ocupaPosicao(posicaoLivre);
 			if(posicaoAnterior != -1) {

@@ -16,4 +16,6 @@ public class Arquivo extends Conteudo{
 	public void setTamanho(BigDecimal tamanho) {
 		this.tamanho = tamanho;
 	}
+	
+	
 }
