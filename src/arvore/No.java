@@ -35,17 +35,23 @@ public class No {
 			this.filhos.add(no);
 		}
 		else {
-			System.out.println("pasta já existente!");
+			System.out.println("pasta ou arquivo já existente!");
 		}
 	}
 	
 	public void removeFilha(No no) {
 		this.filhos.remove(no);
 	}
+	
+	public void imprimeFilhos() {
+		for (No filho : filhos) {
+			System.out.println(filho.toString()  + filho.getConteudo().getClass());
+		}
+	}
 
 	@Override
 	public String toString() {
-		return "No [conteudo=" + conteudo + "]";
+		return conteudo.toString();
 	}
 
 	@Override

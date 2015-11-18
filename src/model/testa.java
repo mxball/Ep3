@@ -41,20 +41,33 @@ public class testa {
 				case "unmount":;
 					break;
 				case "mkdir":
-					arvore.inserePasta(arvore, no, strings);
+					arvore.inserePasta(no, strings);
 					break;
 				case "rmdir":
-					arvore.removeDiretorio(arvore, no, pai, strings);
+					arvore.removeDiretorio(no, pai, strings);
 					break;
 				case "imprime":
 					arvore.printArvore();
 					break;
 				case "cp":	
 				case "cat":	
-				case "touch":	
-				case "rm":	
-				case "ls":	
-				case "find":	
+				case "touch":
+					arvore.insereArquivo(strings[1]);
+					break;
+				case "rm":
+					arvore.removeDiretorio(no, pai, strings);
+					break;
+				case "ls":
+					if(strings.length < 2) {
+						arvore.printArvore();
+					}
+					else{
+						arvore.listaPasta(strings[1]);
+					}
+					break;
+				case "find":
+					arvore.busca(strings[1], strings[2]);
+					break;
 				case "df":
 				case "sai":
 					break;

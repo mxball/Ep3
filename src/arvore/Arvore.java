@@ -2,6 +2,7 @@ package arvore;
 
 import java.util.List;
 
+import model.Arquivo;
 import model.Conteudo;
 import model.Diretorio;
 
@@ -20,16 +21,15 @@ public class Arvore {
 		return no;
 	}
 
-	public void caminhando(Arvore arv) {// caminha na arvore
+	public void caminhando() {// caminha na arvore
 		System.out.println("Pré-ordem: ");
-		arv.preordem(raiz);
+		this.preordem(raiz);
 	}
 
 	public void preordem(No no) {// caminha em preordem
 		if (no == null) {
 			return;
 		}
-		System.out.print("*");
 		no.mostraNo();
 		List<No> filhos = no.getFilhos();
 		for (No filho : filhos) {
@@ -63,18 +63,18 @@ public class Arvore {
 		this.posicaoAtual = posicaoAtual;
 	}
 
-	public void inserePasta(Arvore arvore, No no, String[] strings) {
+	public void inserePasta(No no, String[] strings) {
 		String[] split = strings[1].split("/");
 		String nomePasta = split[split.length-1];
-		No localDeInsercao = achaLocalDeInsercao(split, no);
+		No localDeInsercao = achaLocal(split);
 		Diretorio novo = new Diretorio(nomePasta);
 		localDeInsercao.addFilha(new No(novo));
 	}
 	
-	private No achaLocalDeInsercao(String[] split, No no) {
-		No posicao = no;
+	private No achaLocal(String[] split) {
 		int t = split.length;
 		int i = 0;
+		No posicao = raiz; 
 		while(i < t-1) {
 			List<No> filhos = posicao.getFilhos();
 			for (No filho : filhos) {
@@ -87,10 +87,9 @@ public class Arvore {
 		return posicao;
 	}
 	
-	public void removeDiretorio(Arvore arvore, No no, No pai,
-			String[] strings) {
-		No pasta = arvore.achaPastaARemover(strings[1], no, pai);
-		arvore.removeDiretorio(pasta);
+	public void removeDiretorio(No no, No pai, String[] strings) {
+		No pasta = this.achaPastaARemover(strings[1], no, pai);
+		this.removeDiretorio(pasta);
 		pai.removeFilha(pasta);
 	}
 	
@@ -121,5 +120,53 @@ public class Arvore {
 			System.out.println("Removido:" + filho.getConteudo().getNome());
 		}
 	}
+
+	public void listaPasta(String caminho) {
+		String[] split = caminho.split("/");
+		No pasta = achaLocal(split);
+		List<No> filhos = pasta.getFilhos();
+		pasta.imprimeFilhos();
+	}
+
+	public void insereArquivo(String caminho) {
+		String[] split = caminho.split("/");
+		No localDeInsercao = achaLocal(split);
+		localDeInsercao.addFilha(new No(new Arquivo(split[split.length -1])));
+	}
+
+	public void busca(String caminho, String arquivo) {
+		No pasta = findLocal(caminho.split("/"));
+		procura(pasta, pasta.getConteudo().getNome(), arquivo);
+	}
 	
+	private No findLocal(String[] split) {
+		int t = split.length;
+		int i = 0;
+		No posicao = raiz; 
+		while(i < t) {
+			List<No> filhos = posicao.getFilhos();
+			for (No filho : filhos) {
+				if(filho.getConteudo().getNome().compareTo(split[i]) == 0) {
+					posicao = filho;
+				}
+			}
+			i++;
+		}
+		return posicao;
+	}
+	
+	public void procura(No no, String caminho, String arquivo) {
+		if (no == null) {
+			return;
+		}
+		if(no.getConteudo().getClass().equals(Arquivo.class) &&
+				no.getConteudo().getNome().equals(arquivo)) {
+			System.out.println(caminho);
+		}
+		List<No> filhos = no.getFilhos();
+		for (No filho : filhos) {
+			System.out.println("Procurando no caminho:" + caminho);
+			procura(filho, caminho + "/" + filho.getConteudo().getNome(), arquivo);
+		}
+	}
 }
