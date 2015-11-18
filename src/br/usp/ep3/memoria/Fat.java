@@ -26,10 +26,12 @@ public class Fat {
 		int posicaoAnterior = -1;
 		byte[] bloco = new byte[4000];
 		int numeroBytes = inputStream.read(bloco);
+		int primeiro = -1;
 		while(numeroBytes > 0) {
-			System.out.println(numeroBytes);
 			int posicaoLivre = bitmap.procuraPosicaoLivre();
-			System.out.println(posicaoLivre);
+			if(primeiro == -1) {
+				primeiro = posicaoLivre;
+			}
 			this.particaoDisco.escreveBloco(bloco, posicaoLivre);
 			bitmap.ocupaPosicao(posicaoLivre);
 			if(posicaoAnterior != -1) {
@@ -38,7 +40,12 @@ public class Fat {
 			posicaoAnterior = posicaoLivre;
 			numeroBytes = inputStream.read(bloco);
 		}
+		this.particaoDisco.escreveNoRoot(nomeArquivo, primeiro);
 		inputStream.close();
 	}
-	
+
+	public void buscaArquivo(String string) throws IOException {
+		String i = this.particaoDisco.leRoot(string);
+		this.particaoDisco.leBloco(1);
+	}
 }

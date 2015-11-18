@@ -26,6 +26,7 @@ public class testa {
 		BufferedWriter bw = new BufferedWriter(osw);
 		
 		ParticaoDisco disco = new ParticaoDisco();
+		
 		Fat fat = new Fat(disco);
 		Bitmap bitmap = new Bitmap();
 		
@@ -59,11 +60,13 @@ public class testa {
 					arvore.printArvore();
 					break;
 				case "cp":
-					fat.armazenaArquivo("teste.txt", bitmap);
+					fat.armazenaArquivo("dem2.txt", bitmap);
 					break;
 				case "cat":
+					fat.buscaArquivo(strings[1]);
+					break;
 				case "touch":
-					arvore.insereArquivo(strings[1]);
+//					arvore.insereArquivo(strings[1]);
 					break;
 				case "rm":
 					arvore.removeDiretorio(no, pai, strings);

@@ -13,7 +13,7 @@ public class Bitmap {
 	}
 	
 	public int procuraPosicaoLivre() throws SemEspacoException {
-		for (int i = 0; i < posicaoLivre.length; i++) {
+		for (int i = 1; i < posicaoLivre.length; i++) {
 			if(posicaoLivre[i] == 0) {
 				return i;
 			}

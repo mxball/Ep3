@@ -9,6 +9,7 @@ public class No {
 
     Conteudo conteudo;   
 	List<No> filhos = new ArrayList<No>();
+	List<Integer> ponteiros = new ArrayList<Integer>();
 
     public No(Conteudo palavra){  
         this.conteudo = palavra;  
