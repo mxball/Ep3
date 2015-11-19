@@ -26,6 +26,7 @@ public class Fat {
 	
 	public void armazenaArquivo(String origem, String destino, Bitmap bitmap) throws SemEspacoException, IOException {
 		FileInputStream inputStream = new FileInputStream(origem);
+		int tamanhoEmBytes = inputStream.available(); //NÃO MOVA ISSO DE LUGAR 
 		int posicaoAnterior = -1;
 		byte[] bloco = new byte[4000];
 		int numeroBytes = inputStream.read(bloco);
@@ -53,9 +54,8 @@ public class Fat {
 			bloco = new byte[4000];
 			numeroBytes = inputStream.read(bloco);
 		}
-		this.particaoDisco.guardaNoDiretorio(diretorios[diretorios.length-1], primeiro, posicaoBlocoPai);
+		this.particaoDisco.guardaNoDiretorio(diretorios[diretorios.length-1], primeiro, tamanhoEmBytes, posicaoBlocoPai);
 		this.tabelaFat[posicaoAnterior] = -2;
-		this.particaoDisco.escreveNoRoot(origem, primeiro);
 		inputStream.close();
 	}
 
