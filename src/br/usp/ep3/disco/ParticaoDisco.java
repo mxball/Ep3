@@ -132,14 +132,16 @@ public class ParticaoDisco {
 		while(!isConteudoVazio(conteudo)){
 			novaPosicao += tamanhoEmBytesMaximoElementoNoDiretorio;
 			conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
-			novaPosicao += 10;
-			conteudo = new byte[10];
 			randomAccessFile.read(conteudo);
 		}
 		
 		byte[] novoDiretorio = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
 		byte[] nomeEmBytes = diretorios[diretorios.length - 1].getBytes();
 		System.arraycopy(nomeEmBytes, 0, novoDiretorio, 0, (nomeEmBytes.length < 8) ? nomeEmBytes.length : 8);
+		novoDiretorio[8] = -1;
+		novoDiretorio[9] = -1;
+		novoDiretorio[10] = -1; 
+		novoDiretorio[11] = -1;
 		Calendar hoje = Calendar.getInstance();
 		byte[] data = getBytesDaData(hoje);
 		System.arraycopy(data, 0, novoDiretorio, 12, 6);
@@ -252,7 +254,7 @@ public class ParticaoDisco {
 		System.out.println(nomeDoArquivo);
 		int seek = blocoPai*4000;
 		while(true) {
-			byte[] conteudo = new byte[10];
+			byte[] conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
 			randomAccessFile.read(conteudo);
 			byte[] nomeBytes = new byte[8];
 			byte[] posicaoBytes = new byte[2];
@@ -261,11 +263,11 @@ public class ParticaoDisco {
 			if(nomeDoArquivo.equals(new String(nomeBytes).trim())) {
 				int posicaoDe2Bytes = getPosicaoDe2Bytes(posicaoBytes);
 				randomAccessFile.seek(seek);
-				byte[] b = new byte[10];
+				byte[] b = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
 				randomAccessFile.write(b);
 				return posicaoDe2Bytes;
 			}
-			seek+=10;
+			seek+=tamanhoEmBytesMaximoElementoNoDiretorio;
 		}
 	}
 
@@ -304,7 +306,7 @@ public class ParticaoDisco {
 	public void listaConteudoDiretorio(int posicaoDaPasta) throws IOException {
 		randomAccessFile.seek(posicaoDaPasta*4000);
 		byte[] conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
-		for (int i = 0; i < 4000; i+=tamanhoEmBytesMaximoElementoNoDiretorio) {
+		for (int i = 0; i < 4000; i += tamanhoEmBytesMaximoElementoNoDiretorio) {
 			randomAccessFile.read(conteudo);
 			if(!isConteudoVazio(conteudo)) {
 				byte[] nomeBytes = new byte[8];
@@ -317,12 +319,16 @@ public class ParticaoDisco {
 				System.arraycopy(conteudo, 18, tempoModificacao, 0, tempoModificacao.length);
 				byte[] tempoUltimoAcesso = new byte[6];
 				System.arraycopy(conteudo, 24, tempoUltimoAcesso, 0, tempoUltimoAcesso.length);
-				
 				StringBuilder builder = new StringBuilder();
+				if(isDiretorio(conteudo)) {
+					builder.append("/");
+				}
 				builder.append(new String(nomeBytes).trim());
 				builder.append(" ");
-				builder.append(formataNBytesInteiro(tamanhoEmBytes));
-				builder.append(" ");
+				if(!isDiretorio(conteudo)) {
+					builder.append(formataNBytesInteiro(tamanhoEmBytes));
+					builder.append(" ");
+				}
 				builder.append(getDataFormatada(tempoCriacao));
 				builder.append(" ");
 				builder.append(getDataFormatada(tempoModificacao));
@@ -332,6 +338,10 @@ public class ParticaoDisco {
 			}
 			conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
 		}
+	}
+
+	private boolean isDiretorio(byte[] conteudo) {
+		return conteudo[8] == -1 && conteudo[9] == -1 && conteudo[10] == -1 && conteudo[11] == -1;
 	}
 
 	private String getDataFormatada(byte[] tempoCriacao) {
@@ -366,9 +376,9 @@ public class ParticaoDisco {
 		int posicaoBlocoARemover = buscaPosicaoDiretorio(path);
 		int posicaoFinal = posicaoBlocoARemover* 4000;
 		randomAccessFile.seek(posicaoFinal);
-		for (int j = 0; j < 4000; j+=10) {
+		for (int j = 0; j < 4000; j+=tamanhoEmBytesMaximoElementoNoDiretorio) {
 			randomAccessFile.seek(posicaoFinal + j);
-			byte[] conteudo = new byte[10];
+			byte[] conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
 			randomAccessFile.read(conteudo);
 			if(isConteudoVazio(conteudo)) {
 				
@@ -380,7 +390,7 @@ public class ParticaoDisco {
 	//				removeDiretorio();
 	//			}
 				this.tiraArquivoDoDiretorio(new String(nomeBytes), posicaoBlocoARemover);
-				byte[] vazio = new byte[10];
+				byte[] vazio = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
 				randomAccessFile.seek(posicaoFinal + j);
 				randomAccessFile.write(vazio);
 			}

@@ -46,9 +46,6 @@ public class testa {
 				case "rmdir":
 					disco.removeDiretorio(strings[1]);
 					break;
-				case "imprime":
-					bitmap.imprimeBitmap();
-					break;
 				case "cp":
 					fat.armazenaArquivo(strings[1], strings[2],bitmap);
 					break;
