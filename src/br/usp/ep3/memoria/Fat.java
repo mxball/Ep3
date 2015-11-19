@@ -32,10 +32,12 @@ public class Fat {
 		int primeiro = -1;
 		String[] diretorios = destino.split("/");
 		String path = "";
-		for (int i = 1; i < diretorios.length - 2; i++) {
+		for (int i = 1; i < diretorios.length - 1; i++) {
 			path += "/" + diretorios[i];
+			System.out.println(diretorios[i]);
 		}
 		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
+		System.out.println("diretorio = " + posicaoBlocoPai);
 		while(numeroBytes > 0) {
 			int posicaoLivre = bitmap.procuraPosicaoLivreArquivo();
 			if(primeiro == -1) {

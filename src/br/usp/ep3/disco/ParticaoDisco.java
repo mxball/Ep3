@@ -163,14 +163,8 @@ public class ParticaoDisco {
 			seekbit++;
 		}
 		int x = (int) Math.pow(2, resto);
-		System.out.println("conta = " + conta);
-		System.out.println("resto = " + resto);
-		System.out.println("seekbit = " + seekbit);
-		System.out.println("x = " + x);
 		int bit = b[0] | x;
 		b[0] = (byte) bit;
-		System.out.println("Posicao bit depois: " + bit);
-		System.out.println(Arrays.toString(b));
 		randomAccessFile.seek(seekbit);
 		randomAccessFile.write(b);
 	}
@@ -182,12 +176,13 @@ public class ParticaoDisco {
 			path += "/" + diretorios[i];
 		}
 		int posicaoBlocoPai = buscaPosicaoDiretorio(path);
+		System.out.println("=====" + posicaoBlocoPai);
 		randomAccessFile.seek(posicaoBlocoPai * 4000);
 		byte[] conteudo = new byte[10];
 		randomAccessFile.read(conteudo);
 		int novaPosicao = posicaoBlocoPai  * 4000;
 		while(!isConteudoVazio(conteudo)){
-			System.out.println("AQUI");
+			System.out.println("procurando");
 			novaPosicao += 10;
 			conteudo = new byte[10];
 			randomAccessFile.read(conteudo);

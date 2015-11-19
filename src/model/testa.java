@@ -42,9 +42,6 @@ public class testa {
 					break;
 				case "mkdir":
 					disco.criaDiretorio(strings[1]);
-					int buscaPosicaoDiretorio = disco.buscaPosicaoDiretorio(strings[1]);
-					System.out.println(buscaPosicaoDiretorio);
-					System.out.println(buscaPosicaoDiretorio * 4000);
 					break;
 				case "rmdir":
 					break;
