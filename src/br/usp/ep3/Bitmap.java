@@ -1,28 +1,31 @@
 package br.usp.ep3;
 
+import java.io.IOException;
+
+import br.usp.ep3.disco.ParticaoDisco;
 import br.usp.ep3.exceptions.SemEspacoException;
 
 public class Bitmap {
 
 	private final int tamanhoMaximo = 4000;
 
-	private int[] posicaoLivre = new int[32000];
+	private ParticaoDisco disco;
 	
+	public Bitmap(ParticaoDisco disco) {
+		this.disco = disco;
+	}
+
 	public int getTamanhoMaximo() {
 		return tamanhoMaximo;
 	}
 	
-	public int procuraPosicaoLivre() throws SemEspacoException {
-		for (int i = 1; i < posicaoLivre.length; i++) {
-			if(posicaoLivre[i] == 0) {
-				return i;
-			}
-		}
-		throw new SemEspacoException();
+	public int procuraPosicaoLivre() throws SemEspacoException, IOException {
+		int bitmap = disco.leBitmap();
+		return bitmap;
 	}
 	
-	public void ocupaPosicao(int posicao) {
-		this.posicaoLivre[posicao] = 1;
+	public void ocupaPosicao(int posicao) throws IOException {
+		disco.ocupaBitmap(posicao);
 	}
 	
 }

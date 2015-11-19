@@ -14,11 +14,14 @@ public class Fat {
 	
 	
 	public Fat(ParticaoDisco particao) {
-		//constroi a tabela de blocos
-		for (int i = 0; i < tabelaFat.length; i++) {
-			this.tabelaFat[i] = -1;
-		}
 		this.particaoDisco = particao;
+		if(particao.getNovo() == 0) {
+			for (int i = 0; i < tabelaFat.length; i++) {
+				this.tabelaFat[i] = -1;
+			}
+		} else {
+				
+		}
 	}
 	
 	public void armazenaArquivo(String nomeArquivo, Bitmap bitmap) throws SemEspacoException, IOException {

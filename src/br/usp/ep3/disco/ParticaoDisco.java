@@ -5,28 +5,34 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class ParticaoDisco {
 
 //	private int[] tabelaBlocos = new int[25000];
 	private File arquivoBinario;
 	private RandomAccessFile randomAccessFile;
+	private int novo = 0;/*0 novo 1 existente*/
 	
-	public ParticaoDisco() throws FileNotFoundException {
+	public ParticaoDisco(String nomeDoSistema) throws IOException {
+		Path path = Files.createTempFile(nomeDoSistema,"");
+		Files.exists(path);
+		File file = new File(nomeDoSistema);
+		if(file.exists()) {
+			novo = 1;
+		}
+		arquivoBinario = file;
+		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 	}
 	
 	public void escreveBloco(byte[] conteudo, int posicaoConteudo) throws IOException {
-		arquivoBinario = new File("arquivoBinario2");	
-		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 		int posicaoArquivo =  posicaoConteudo * 4000;
 		randomAccessFile.seek(posicaoArquivo);
 		randomAccessFile.write(conteudo);
-		randomAccessFile.close();
 	}
 
 	public void escreveNoRoot(String nomeArquivo, Integer posicao) throws IOException {
-		arquivoBinario = new File("arquivoBinario2");	
-		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 		randomAccessFile.seek(0);
 //		while(true) {
 //			byte[] lido = new byte[10];
@@ -50,23 +56,17 @@ public class ParticaoDisco {
 		buffer.put(8, bytesDaPosicao[0]);
 		buffer.put(9, bytesDaPosicao[1]);
 		randomAccessFile.write(buffer.array());
-		randomAccessFile.close();
 	}
 	
 	public void escreveDir(byte[] conteudo, int posicaoConteudo) throws IOException {
-		arquivoBinario = new File("arquivoBinario2");
-		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 		int posicaoArquivo =  1 * 4000;
 		randomAccessFile.seek(posicaoArquivo);
 		byte[] lido = new byte[4000];
 		randomAccessFile.read(lido);
 		randomAccessFile.write(conteudo);
-		randomAccessFile.close();
 	}
 
 	public int leRoot(String nomeArquivo) throws IOException {
-		arquivoBinario = new File("arquivoBinario2");	
-		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 		randomAccessFile.seek(0);
 		byte[] lido = new byte[10];
 		randomAccessFile.read(lido);
@@ -82,12 +82,9 @@ public class ParticaoDisco {
 	}
 
 	public String leBloco(int i) throws IOException {
-		arquivoBinario = new File("arquivoBinario2");	
-		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
 		randomAccessFile.seek(i*4000);
 		byte[] b = new byte[4000];
 		randomAccessFile.read(b);
-		randomAccessFile.close();
 		return new String(b);
 	}
 
@@ -104,4 +101,70 @@ public class ParticaoDisco {
 		int posicao = low | (high << 8);
 		return  posicao;
 	}
+
+	public void fechaArquivo() throws IOException {
+		randomAccessFile.close();
+	}
+
+	public int getNovo() {
+		return novo;
+	}
+
+	public int leBitmap() throws IOException {
+		randomAccessFile.seek(4000);
+		for (int i = 1; i < 50000; i++) {
+			byte[] b = new byte[1];
+			randomAccessFile.read(b);
+			for(int j = 0; j < 8; j++) {
+				int bit = getBit(b[0], j);
+				if(bit == 0) {
+					return (i-1)*8 + j+1;
+				}
+			}
+		}
+		return -1;
+	}
+	
+	public int escreveBitmap() throws IOException {
+		randomAccessFile.seek(4000);
+		for (int i = 1; i < 6250; i++) {
+			byte[] b = new byte[1];
+			randomAccessFile.read(b);
+			for(int j = 0; j < 8; j++) {
+				int bit = getBit(b[0], j);
+				if(bit == 0) {
+					return (i-1)*8 + j+1;
+				}
+			}
+		}
+		return -1;
+	}
+	/*Falta preencher o bit certo, ja estou no lugar certo*/
+	public int ocupaBitmap(int posicao) throws IOException {
+		randomAccessFile.seek(4000);
+		int resto = posicao % 8;
+		int conta = posicao/8;
+		int i = 1;
+		byte[] b = new byte[1];
+		for (;i <= conta; i++) {
+			b = new byte[1];
+			randomAccessFile.read(b);
+		}
+		for(int j = 0; j < resto; j++) {
+			int bit = getBit(b[0], j);
+				if(bit == 0) {
+					return (i-1)*8 + j+1;
+			}
+		}
+		return -1;
+	}
+	
+	
+	private int getBit(byte b, int posicao) {  
+	    int mascara = 1 << posicao;  
+	    int retorno = b & mascara;  
+	      
+	    return retorno != 0 ? 1 : 0;  
+	}  
+
 }
