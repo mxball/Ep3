@@ -275,16 +275,6 @@ public class ParticaoDisco {
 	    return retorno != 0 ? 1 : 0;  
 	}  
 	
-	public static void main(String[] args) {  
-//	   byte b = 0 ;
-//	   byte	 c = (byte) (b | 128);
-//	   for(int  i = 0; i < 8;i++) {
-//		   System.out.println(getBit(c, i));
-//	   }
-		String teste = "/teste";
-		System.out.println(teste.split("/").length);
-	}
-
 	public void guardaNoDiretorio(String nomeArquivo, int primeiro,
 			int blocoPai) throws IOException {
 		randomAccessFile.seek(blocoPai*4000);
@@ -306,4 +296,5 @@ public class ParticaoDisco {
 			i = i+ 10;
 		}
 	}
+
 }

@@ -89,7 +89,7 @@ public class Fat {
 	
 	public void escreveFat() throws IOException {
 		for (int i = 0; i < 25000; i++) {
-			particaoDisco.randomAccessFile.seek(12000 + i*2);
+			particaoDisco.randomAccessFile.seek(8000 + i*2);
 			byte[] bytesDaPosicao = particaoDisco.get2BytesDaPosicao(i);
 			particaoDisco.randomAccessFile.write(bytesDaPosicao);
 		}
