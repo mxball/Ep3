@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class ParticaoDisco {
 
@@ -56,15 +55,6 @@ public class ParticaoDisco {
 		randomAccessFile.write(buffer.array());
 	}
 	
-	public void escreveDir(byte[] conteudo, int posicaoConteudo) throws IOException {
-		int posicaoArquivo =  1 * 4000;
-		System.out.println(posicaoConteudo);
-		randomAccessFile.seek(posicaoArquivo);
-		byte[] lido = new byte[4000];
-		randomAccessFile.read(lido);
-		randomAccessFile.write(conteudo);
-	}
-
 	public int leRoot(String nomeArquivo) throws IOException {
 		randomAccessFile.seek(0);
 		byte[] lido = new byte[10];
@@ -297,4 +287,19 @@ public class ParticaoDisco {
 		}
 	}
 
+	public void listaConteudoDiretorio(int posicaoDaPasta) throws IOException {
+		randomAccessFile.seek(posicaoDaPasta*4000);
+		byte[] conteudo = new byte[10];
+
+		/*POR ENQUANTO CONTEUDO SO TEM 10 BYTES*/
+		for (int i = 0; i < 4000; i+=10) {
+			randomAccessFile.read(conteudo);
+			if(!isConteudoVazio(conteudo)) {
+				byte[] nomeBytes = new byte[8];
+				System.arraycopy(conteudo, 0, nomeBytes, 0, nomeBytes.length);
+				System.out.println(new String(nomeBytes));
+			}
+			conteudo = new byte[10];
+		}
+	}
 }

@@ -60,11 +60,7 @@ public class testa {
 				case "rm":
 					break;
 				case "ls":
-					if(strings.length < 2) {
-					}
-					else{
-					}
-					break;
+					fat.mostraDiretorio(strings[1]);
 				case "find":
 					break;
 				case "df":

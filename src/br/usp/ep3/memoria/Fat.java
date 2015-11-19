@@ -104,4 +104,14 @@ public class Fat {
 		}
 	}
 
+	public void mostraDiretorio(String string) throws IOException {
+		String[] diretorios = string.split("/");
+		String path = "";
+		for (int i = 1; i < diretorios.length; i++) {
+			path += "/" + diretorios[i];
+		}
+		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
+		particaoDisco.listaConteudoDiretorio(posicaoBlocoPai);
+	}
+
 }
