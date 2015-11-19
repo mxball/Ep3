@@ -14,6 +14,7 @@ public class ParticaoDisco {
 	private File arquivoBinario;
 	private RandomAccessFile randomAccessFile;
 	private int novo = 0;/*0 novo 1 existente*/
+	private int posicaoUltimoDiretorio = 15;
 	
 	public ParticaoDisco(String nomeDoSistema) throws IOException {
 		Path path = Files.createTempFile(nomeDoSistema,"");
@@ -209,5 +210,67 @@ public class ParticaoDisco {
 			byte[] b = get2BytesDaPosicao(i);
 			randomAccessFile.read(b);
 		}
+	}
+	
+	public void criaDiretorio(String caminhoCompleto) throws IOException {
+		String[] diretorios = caminhoCompleto.split("/");
+		String path = "";
+		for (int i = 1; i < diretorios.length - 1; i++) {
+			path += "/" + diretorios[i];
+		}
+		int posicaoBlocoPai = buscaPosicaoDiretorio(path);
+		randomAccessFile.seek(posicaoBlocoPai * 4000);
+		byte[] conteudo = new byte[10];
+		randomAccessFile.read(conteudo);
+		int novaPosicao = posicaoBlocoPai  * 4000;
+		while(!isConteudoVazio(conteudo)){
+			System.out.println("AQUI");
+			novaPosicao += 10;
+			conteudo = new byte[10];
+			randomAccessFile.read(conteudo);
+		}
+		randomAccessFile.seek(novaPosicao);
+		ByteBuffer buffer = ByteBuffer.allocate(10);
+		for (byte b : diretorios[diretorios.length - 1].getBytes()) {
+			buffer.put(b);
+		}
+		byte[] bytesDaPosicao = get2BytesDaPosicao(++posicaoUltimoDiretorio);
+		buffer.put(8, bytesDaPosicao[0]);
+		buffer.put(9, bytesDaPosicao[1]);
+		randomAccessFile.write(buffer.array());
+	}
+	
+
+	private boolean isConteudoVazio(byte[] conteudo) {
+		for (int i = 0; i < conteudo.length; i++) {
+			if(conteudo[i] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public int buscaPosicaoDiretorio(String caminho) throws IOException {
+		String[] diretorios = caminho.split("/");
+		int posicaoByte = 60000;
+		randomAccessFile.seek(posicaoByte);
+		byte[] conteudo = new byte[10];
+		int indiceDiretorio = 1;
+		while(indiceDiretorio < diretorios.length) {
+			System.out.println("aqui" + indiceDiretorio);
+			randomAccessFile.read(conteudo);
+			byte[] nomeBytes = new byte[8];
+			byte[] posicaoBytes = new byte[2];
+			System.arraycopy(conteudo, 0, nomeBytes, 0, nomeBytes.length);
+			System.arraycopy(conteudo, 8, posicaoBytes, 0, posicaoBytes.length);
+			if(diretorios[indiceDiretorio].equals(new String(nomeBytes).trim())) {
+				indiceDiretorio++;
+				posicaoByte = getPosicaoDe2Bytes(posicaoBytes) * 4000;
+				randomAccessFile.seek(posicaoByte);
+			}
+			conteudo = new byte[10];
+		}
+		int posicaoBloco = posicaoByte / 4000;
+		return posicaoBloco;
 	}
 }
