@@ -178,13 +178,36 @@ public class ParticaoDisco {
 	}  
 	
 	public static void main(String[] args) {  
-	   byte b = 15;
-	   byte[] d = new byte[1];
+	   byte b = -1;
 	   byte	 c = (byte) (b | 16);
-	   d[0] = c;
 	   for(int  i = 0; i < 8;i++) {
-		   System.out.println(getBit(d[0], i));
-		   System.out.println(Arrays.toString(d));
+		   System.out.println(getBit(c, i));
 	   }
+	}
+
+	public void inicializaFat() throws IOException {
+		randomAccessFile.seek(12000);
+		byte[] b = new byte[52000];
+		b[0] = (byte) (b[0] | 15);
+		for (int i = 1; i < 52000; i++) {
+			b[i] = 0;
+		}
+		randomAccessFile.write(b);
+	}
+	
+	public void escreveFat() throws IOException {
+		for (int i = 0; i < 25000; i++) {
+			randomAccessFile.seek(12000 + i*2);
+			byte[] bytesDaPosicao = get2BytesDaPosicao(i);
+			randomAccessFile.write(bytesDaPosicao);
+		}
+	}
+	
+	public void leFat() throws IOException {
+		randomAccessFile.seek(12000);
+		for (int i = 0; i < 25000; i++) {
+			byte[] b = get2BytesDaPosicao(i);
+			randomAccessFile.read(b);
+		}
 	}
 }

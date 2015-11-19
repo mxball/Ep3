@@ -64,4 +64,14 @@ public class Superblock {
 		}
 		
 	}
+	
+	public void salvaSuperblock(ParticaoDisco disco) throws IOException {
+		String superBlock = "tamanhoOcupado " + getTamanhoOcupado() +
+					   " numeroDiretorios " + getNumedoDiretorios() + 
+					   " numeroArquivos " + getNumeroArquivos() + 
+					   " espacoDisperdicado " + getEspacoDesperdicado()
+					   + " ";
+		byte[] conteudo = superBlock.getBytes();
+		disco.escreveBloco(conteudo, 0);
+	}
 }

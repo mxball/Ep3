@@ -13,14 +13,14 @@ public class Fat {
 	private ParticaoDisco particaoDisco;
 	
 	
-	public Fat(ParticaoDisco particao) {
+	public Fat(ParticaoDisco particao) throws IOException {
 		this.particaoDisco = particao;
 		if(particao.getNovo() == 0) {
 			for (int i = 0; i < tabelaFat.length; i++) {
 				this.tabelaFat[i] = -1;
 			}
 		} else {
-				
+			particao.inicializaFat();
 		}
 	}
 	

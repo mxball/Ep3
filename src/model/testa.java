@@ -13,8 +13,8 @@ public class testa {
 	
 	public static void main(String[] args) throws IOException, SemEspacoException {
 		
-		ParticaoDisco disco;
-		Superblock superblock;
+		ParticaoDisco disco = null;
+		Superblock superblock = null;
 		Fat fat = null;
 		Bitmap bitmap = null;
 		int inicializado = 0;
@@ -65,6 +65,7 @@ public class testa {
 					break;
 				case "df":
 				case "sai":
+					superblock.salvaSuperblock(disco);
 					break;
 				default:
 					break;
