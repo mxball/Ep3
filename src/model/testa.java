@@ -39,6 +39,7 @@ public class testa {
 					inicializado  = disco.getNovo();
 					if(inicializado == 0) {
 						disco.inicializaBitmap();
+						fat.inicializaFat();
 					}
 					break;
 				case "unmount":;
@@ -75,6 +76,7 @@ public class testa {
 				case "df":
 				case "sai":
 					superblock.salvaSuperblock(disco);
+					fat.escreveFat();
 					break;
 				default:
 					break;

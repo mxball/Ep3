@@ -8,11 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import br.usp.ep3.memoria.Fat;
+
 public class ParticaoDisco {
 
 //	private int[] tabelaBlocos = new int[25000];
 	private File arquivoBinario;
-	private RandomAccessFile randomAccessFile;
+	public RandomAccessFile randomAccessFile;
 	private int novo = 0;/*0 novo 1 existente*/
 	private int posicaoUltimoDiretorio = 15;
 	
@@ -89,14 +91,14 @@ public class ParticaoDisco {
 		return new String(b);
 	}
 
-	private byte[] get2BytesDaPosicao(int posicao) {
+	public byte[] get2BytesDaPosicao(int posicao) {
 		byte[] bytes = new byte[2];
 		bytes[0] = (byte)(posicao & 0xFF);
 		bytes[1] = (byte)((posicao >> 8) & 0xFF);
 		return bytes;
 	}
 	
-	private int getPosicaoDe2Bytes(byte[] doisBytes) {
+	public int getPosicaoDe2Bytes(byte[] doisBytes) {
 		int high = doisBytes[1] >= 0 ? doisBytes[1] : 256 + doisBytes[1];
 		int low = doisBytes[0] >= 0 ? doisBytes[0] : 256 + doisBytes[0];
 		int posicao = low | (high << 8);
@@ -186,32 +188,6 @@ public class ParticaoDisco {
 	   }
 	}
 
-	public void inicializaFat() throws IOException {
-		randomAccessFile.seek(12000);
-		byte[] b = new byte[52000];
-		b[0] = (byte) (b[0] | 15);
-		for (int i = 1; i < 52000; i++) {
-			b[i] = 0;
-		}
-		randomAccessFile.write(b);
-	}
-	
-	public void escreveFat() throws IOException {
-		for (int i = 0; i < 25000; i++) {
-			randomAccessFile.seek(12000 + i*2);
-			byte[] bytesDaPosicao = get2BytesDaPosicao(i);
-			randomAccessFile.write(bytesDaPosicao);
-		}
-	}
-	
-	public void leFat() throws IOException {
-		randomAccessFile.seek(12000);
-		for (int i = 0; i < 25000; i++) {
-			byte[] b = get2BytesDaPosicao(i);
-			randomAccessFile.read(b);
-		}
-	}
-	
 	public void criaDiretorio(String caminhoCompleto) throws IOException {
 		String[] diretorios = caminhoCompleto.split("/");
 		String path = "";

@@ -20,7 +20,7 @@ public class Fat {
 				this.tabelaFat[i] = -1;
 			}
 		} else {
-			particao.inicializaFat();
+			leFat();
 		}
 	}
 	
@@ -62,4 +62,33 @@ public class Fat {
 		}
 		System.out.println(buffer.toString());
 	}
+	
+
+	public void inicializaFat() throws IOException {
+		particaoDisco.randomAccessFile.seek(12000);
+		byte[] b = new byte[52000];
+		b[0] = (byte) (b[0] | 15);
+		for (int i = 1; i < 52000; i++) {
+			b[i] = 0;
+		}
+		particaoDisco.randomAccessFile.write(b);
+	}
+	
+	public void escreveFat() throws IOException {
+		for (int i = 0; i < 25000; i++) {
+			particaoDisco.randomAccessFile.seek(12000 + i*2);
+			byte[] bytesDaPosicao = particaoDisco.get2BytesDaPosicao(i);
+			particaoDisco.randomAccessFile.write(bytesDaPosicao);
+		}
+	}
+	
+	public void leFat() throws IOException {
+		particaoDisco.randomAccessFile.seek(12000);
+		for (int i = 0; i < 25000; i++) {
+			byte[] b = new byte[2];
+			particaoDisco.randomAccessFile.read(b);
+			tabelaFat[i] = particaoDisco.getPosicaoDe2Bytes(b);
+		}
+	}
+
 }
