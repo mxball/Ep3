@@ -1,12 +1,12 @@
 package br.usp.ep3.disco;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class ParticaoDisco {
 
@@ -112,59 +112,79 @@ public class ParticaoDisco {
 
 	public int leBitmap() throws IOException {
 		randomAccessFile.seek(4000);
-		for (int i = 1; i < 50000; i++) {
+		for (int i = 0; i < 4000; i++) {
 			byte[] b = new byte[1];
 			randomAccessFile.read(b);
 			for(int j = 0; j < 8; j++) {
 				int bit = getBit(b[0], j);
 				if(bit == 0) {
-					return (i-1)*8 + j+1;
+					return (i)*8 + j;
 				}
 			}
 		}
 		return -1;
+	}
+	
+	public void inicializaBitmap() throws IOException {
+		randomAccessFile.seek(4000);
+		byte[] b = new byte[3125];
+		b[0] = (byte) (b[0] | 15);
+		for (int i = 1; i < 3125; i++) {
+			b[i] = 0;
+		}
+		randomAccessFile.write(b);
 	}
 	
 	public int escreveBitmap() throws IOException {
 		randomAccessFile.seek(4000);
-		for (int i = 1; i < 6250; i++) {
+		for (int i = 0; i < 4000; i++) {
 			byte[] b = new byte[1];
 			randomAccessFile.read(b);
 			for(int j = 0; j < 8; j++) {
 				int bit = getBit(b[0], j);
 				if(bit == 0) {
-					return (i-1)*8 + j+1;
+					return (i)*8 + j+1;
 				}
 			}
 		}
 		return -1;
 	}
+	
 	/*Falta preencher o bit certo, ja estou no lugar certo*/
-	public int ocupaBitmap(int posicao) throws IOException {
+	public void ocupaBitmap(int posicao) throws IOException {
 		randomAccessFile.seek(4000);
+		int seekbit = 3999;
 		int resto = posicao % 8;
 		int conta = posicao/8;
-		int i = 1;
 		byte[] b = new byte[1];
-		for (;i <= conta; i++) {
+		for (int i = 0;i <= conta; i++) {
 			b = new byte[1];
 			randomAccessFile.read(b);
+			seekbit++;
 		}
-		for(int j = 0; j < resto; j++) {
-			int bit = getBit(b[0], j);
-				if(bit == 0) {
-					return (i-1)*8 + j+1;
-			}
-		}
-		return -1;
+		int x = (int) Math.pow(2, resto);
+		int bit = b[0] | x;
+		b[0] = (byte) bit;
+		System.out.println("Posicao bit depois: " + bit);
+		System.out.println(Arrays.toString(b));
+		randomAccessFile.seek(seekbit);
+		randomAccessFile.write(b);
 	}
-	
-	
-	private int getBit(byte b, int posicao) {  
+
+	private static int getBit(byte b, int posicao) {  
 	    int mascara = 1 << posicao;  
 	    int retorno = b & mascara;  
-	      
 	    return retorno != 0 ? 1 : 0;  
 	}  
-
+	
+	public static void main(String[] args) {  
+	   byte b = 15;
+	   byte[] d = new byte[1];
+	   byte	 c = (byte) (b | 16);
+	   d[0] = c;
+	   for(int  i = 0; i < 8;i++) {
+		   System.out.println(getBit(d[0], i));
+		   System.out.println(Arrays.toString(d));
+	   }
+	}
 }

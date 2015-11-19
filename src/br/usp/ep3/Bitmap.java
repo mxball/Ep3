@@ -14,7 +14,7 @@ public class Bitmap {
 	public Bitmap(ParticaoDisco disco) {
 		this.disco = disco;
 	}
-
+	
 	public int getTamanhoMaximo() {
 		return tamanhoMaximo;
 	}

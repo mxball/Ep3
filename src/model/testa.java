@@ -17,7 +17,7 @@ public class testa {
 		Superblock superblock;
 		Fat fat = null;
 		Bitmap bitmap = null;
-		boolean inicializado = false;
+		int inicializado = 0;
 		
 		while(true) {
 			System.out.print("[ep3]:");
@@ -31,7 +31,10 @@ public class testa {
 					superblock.setInfoSuperblock(disco);
 					fat = new Fat(disco);
 					bitmap = new Bitmap(disco);
-					inicializado = true;
+					inicializado  = disco.getNovo();
+					if(inicializado == 0) {
+						disco.inicializaBitmap();
+					}
 					break;
 				case "unmount":;
 					break;

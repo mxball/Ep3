@@ -34,6 +34,8 @@ public class Fat {
 			int posicaoLivre = bitmap.procuraPosicaoLivre();
 			if(primeiro == -1) {
 				primeiro = posicaoLivre;
+			}else {
+				System.out.println("Proxima:" + posicaoLivre);
 			}
 			this.particaoDisco.escreveBloco(bloco, posicaoLivre);
 			bitmap.ocupaPosicao(posicaoLivre);
