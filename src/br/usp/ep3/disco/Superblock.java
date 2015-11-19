@@ -48,19 +48,19 @@ public class Superblock {
 		this.espacoDesperdicado = espacoDesperdicado;
 	}
 	public void setInfoSuperblock(ParticaoDisco disco) throws IOException {
-		if(disco.getNovo() == 1) {
+		if(disco.isNovo()) {
+			setTamanhoOcupado(0);
+			setNumedoDiretorios(0);
+			setNumeroArquivos(0);
+			setEspacoDesperdicado(0);
+		}
+		else {
 			String string = disco.leBloco(0);
 			String[] split = string.split(" ");
 
 			setNumedoDiretorios(Integer.parseInt(split[3]));
 			setNumeroArquivos(Integer.parseInt(split[5]));
 			setEspacoDesperdicado(Integer.parseInt(split[7]));
-		}
-		else {
-			setTamanhoOcupado(0);
-			setNumedoDiretorios(0);
-			setNumeroArquivos(0);
-			setEspacoDesperdicado(0);
 		}
 		
 	}
@@ -73,5 +73,9 @@ public class Superblock {
 					   + " ";
 		byte[] conteudo = superBlock.getBytes();
 		disco.escreveBloco(conteudo, 0);
+	}
+	
+	public void incrementaNumeroDiretorios() {
+		this.numedoDiretorios++;
 	}
 }

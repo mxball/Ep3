@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 public class ParticaoDisco {
@@ -13,18 +11,17 @@ public class ParticaoDisco {
 //	private int[] tabelaBlocos = new int[25000];
 	private File arquivoBinario;
 	public RandomAccessFile randomAccessFile;
-	private int novo = 0;/*0 novo 1 existente*/
-	private int posicaoUltimoDiretorio = 15;
+	private boolean ehNovo = false;/*0 novo 1 existente*/
+	private Superblock superblock;
 	
-	public ParticaoDisco(String nomeDoSistema) throws IOException {
-		Path path = Files.createTempFile(nomeDoSistema,"");
-		Files.exists(path);
-		File file = new File(nomeDoSistema);
-		if(file.exists()) {
-			novo = 1;
+	public ParticaoDisco(String nomeDoSistema, Superblock superblock) throws IOException {
+		this.superblock = superblock;
+		arquivoBinario = new File(nomeDoSistema);
+		if(!arquivoBinario.exists()) { 
+			ehNovo = true;
 		}
-		arquivoBinario = file;
 		randomAccessFile = new RandomAccessFile(arquivoBinario, "rw");
+		superblock.setInfoSuperblock(this);
 	}
 	
 	public void escreveBloco(byte[] conteudo, int posicaoConteudo) throws IOException {
@@ -108,8 +105,8 @@ public class ParticaoDisco {
 		randomAccessFile.close();
 	}
 
-	public int getNovo() {
-		return novo;
+	public boolean isNovo() {
+		return ehNovo;
 	}
 
 	public int leBitmap() throws IOException {
@@ -130,8 +127,9 @@ public class ParticaoDisco {
 	public void inicializaBitmap() throws IOException {
 		randomAccessFile.seek(4000);
 		byte[] b = new byte[3125];
-		b[0] = (byte) (b[0] | 15);
-		for (int i = 1; i < 3125; i++) {
+		b[0] = (byte) (b[0] | -1);
+		b[1] = (byte) (b[1] | -1);
+		for (int i = 16; i < 3125; i++) {
 			b[i] = 0;
 		}
 		randomAccessFile.write(b);
@@ -194,14 +192,20 @@ public class ParticaoDisco {
 			conteudo = new byte[10];
 			randomAccessFile.read(conteudo);
 		}
-		randomAccessFile.seek(novaPosicao);
 		ByteBuffer buffer = ByteBuffer.allocate(10);
 		for (byte b : diretorios[diretorios.length - 1].getBytes()) {
 			buffer.put(b);
 		}
-		byte[] bytesDaPosicao = get2BytesDaPosicao(++posicaoUltimoDiretorio);
+		int posicaoBloco = leBitmap();
+		System.out.println("BLOCO " + posicaoBloco);
+		System.out.println(posicaoBloco * 4000);
+		byte[] bytesDaPosicao = get2BytesDaPosicao(posicaoBloco);
 		buffer.put(8, bytesDaPosicao[0]);
 		buffer.put(9, bytesDaPosicao[1]);
+		ocupaBitmap(posicaoBloco);
+		superblock.incrementaNumeroDiretorios();
+		System.out.println("Escrevendo " + novaPosicao);
+		randomAccessFile.seek(novaPosicao);
 		randomAccessFile.write(buffer.array());
 	}
 	
@@ -231,6 +235,7 @@ public class ParticaoDisco {
 			if(diretorios[indiceDiretorio].equals(new String(nomeBytes).trim())) {
 				indiceDiretorio++;
 				posicaoByte = getPosicaoDe2Bytes(posicaoBytes) * 4000;
+				System.out.println("ACHEI " + posicaoByte);
 				randomAccessFile.seek(posicaoByte);
 			}
 			conteudo = new byte[10];

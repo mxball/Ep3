@@ -22,8 +22,6 @@ public class testa {
 		Superblock superblock = null;
 		Fat fat = null;
 		Bitmap bitmap = null;
-		int inicializado = 0;
-		
 		while(true) {
 			System.out.print("[ep3]:");
 			Scanner sc = new Scanner(System.in);
@@ -31,13 +29,11 @@ public class testa {
 			String[] strings = string.split(" ");
 			switch (strings[0]) {
 				case "mount":
-					disco = new ParticaoDisco(strings[1]);
 					superblock = new Superblock();
-					superblock.setInfoSuperblock(disco);
+					disco = new ParticaoDisco(strings[1], superblock);
 					fat = new Fat(disco);
 					bitmap = new Bitmap(disco);
-					inicializado  = disco.getNovo();
-					if(inicializado == 0) {
+					if(disco.isNovo()) {
 						disco.inicializaBitmap();
 						fat.inicializaFat();
 					}
@@ -78,6 +74,7 @@ public class testa {
 				case "sai":
 					superblock.salvaSuperblock(disco);
 					fat.escreveFat();
+					disco.fechaArquivo();
 					return;
 				default:
 					break;

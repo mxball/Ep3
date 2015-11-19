@@ -15,7 +15,7 @@ public class Fat {
 	
 	public Fat(ParticaoDisco particao) throws IOException {
 		this.particaoDisco = particao;
-		if(particao.getNovo() == 0) {
+		if(particao.isNovo()) {
 			for (int i = 0; i < tabelaFat.length; i++) {
 				this.tabelaFat[i] = -1;
 			}
