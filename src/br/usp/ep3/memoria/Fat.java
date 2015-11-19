@@ -38,7 +38,6 @@ public class Fat {
 			System.out.println(diretorios[i]);
 		}
 		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
-		System.out.println("diretorio = " + posicaoBlocoPai);
 		while(numeroBytes > 0) {
 			int posicaoLivre = bitmap.procuraPosicaoLivreArquivo();
 			if(primeiro == -1) {
@@ -58,6 +57,29 @@ public class Fat {
 		this.tabelaFat[posicaoAnterior] = -2;
 		inputStream.close();
 	}
+	
+
+	public void removeArquivo(String destino) throws IOException {
+		String[] diretorios = destino.split("/");
+		String path = "";
+		for (int i = 1; i < diretorios.length - 1; i++) {
+			path += "/" + diretorios[i];
+		}
+		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
+		int i = this.particaoDisco.tiraArquivoDoDiretorio(diretorios[diretorios.length-1], posicaoBlocoPai);
+		this.particaoDisco.limpaBloco(i);
+		while(this.tabelaFat[i] != -2) {
+			int j = this.tabelaFat[i];
+			this.tabelaFat[i] = -1;
+			this.particaoDisco.removeDoBitmap(i);
+			i = j;
+			System.out.println(i + "+" + j);
+			this.particaoDisco.limpaBloco(j);
+		}
+		this.tabelaFat[i] = -1;
+		this.particaoDisco.removeDoBitmap(i);
+	}
+
 
 	public void buscaArquivo(String string) throws IOException {
 		String[] diretorios = string.split("/");

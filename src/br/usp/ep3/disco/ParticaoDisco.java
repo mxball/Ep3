@@ -125,15 +125,15 @@ public class ParticaoDisco {
 			path += "/" + diretorios[i];
 		}
 		int posicaoBlocoPai = buscaPosicaoDiretorio(path);
-		System.out.println("=====" + posicaoBlocoPai);
 		randomAccessFile.seek(posicaoBlocoPai * 4000);
 		byte[] conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
 		randomAccessFile.read(conteudo);
 		int novaPosicao = posicaoBlocoPai  * 4000;
 		while(!isConteudoVazio(conteudo)){
-			System.out.println("procurando");
 			novaPosicao += tamanhoEmBytesMaximoElementoNoDiretorio;
 			conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
+			novaPosicao += 10;
+			conteudo = new byte[10];
 			randomAccessFile.read(conteudo);
 		}
 		
@@ -151,7 +151,6 @@ public class ParticaoDisco {
 		
 		ocupaBitmap(posicaoBloco);
 		superblock.incrementaNumeroDiretorios();
-		System.out.println("Escrevendo " + novaPosicao);
 		randomAccessFile.seek(novaPosicao);
 		randomAccessFile.write(novoDiretorio);
 	}
@@ -246,6 +245,29 @@ public class ParticaoDisco {
 			}
 		}
 	}
+	
+	public int tiraArquivoDoDiretorio(String nomeDoArquivo, int blocoPai) throws IOException {
+		randomAccessFile.seek(blocoPai*4000);
+		System.out.println(blocoPai);
+		System.out.println(nomeDoArquivo);
+		int seek = blocoPai*4000;
+		while(true) {
+			byte[] conteudo = new byte[10];
+			randomAccessFile.read(conteudo);
+			byte[] nomeBytes = new byte[8];
+			byte[] posicaoBytes = new byte[2];
+			System.arraycopy(conteudo, 0, nomeBytes, 0, nomeBytes.length);
+			System.arraycopy(conteudo, 8, posicaoBytes, 0, posicaoBytes.length);
+			if(nomeDoArquivo.equals(new String(nomeBytes).trim())) {
+				int posicaoDe2Bytes = getPosicaoDe2Bytes(posicaoBytes);
+				randomAccessFile.seek(seek);
+				byte[] b = new byte[10];
+				randomAccessFile.write(b);
+				return posicaoDe2Bytes;
+			}
+			seek+=10;
+		}
+	}
 
 	private static int getBit(byte b, int posicao) {  
 	    int mascara = 1 << posicao;  
@@ -326,4 +348,84 @@ public class ParticaoDisco {
 		return formataNBytesInteiro(dia) + "/" + formataNBytesInteiro(mes) + "/" + formataNBytesInteiro(ano) +
 			" " + formataNBytesInteiro(hora) + ":" + formataNBytesInteiro(minuto);
 	}
+	public void limpaBloco(int i) throws IOException {
+		randomAccessFile.seek(i*4000);
+		byte[] b = new byte[4000];
+		randomAccessFile.write(b);
+	}
+
+	public void removeDiretorio(String caminhoCompleto) throws IOException {
+		String[] diretorios = caminhoCompleto.split("/");
+		String path = "";
+		int i;
+		for (i = 1; i < diretorios.length - 1; i++) {
+			path += "/" + diretorios[i];
+		}
+		int posicaoBlocoPai = buscaPosicaoDiretorio(path);
+		path += "/"+ diretorios[i];
+		int posicaoBlocoARemover = buscaPosicaoDiretorio(path);
+		int posicaoFinal = posicaoBlocoARemover* 4000;
+		randomAccessFile.seek(posicaoFinal);
+		for (int j = 0; j < 4000; j+=10) {
+			randomAccessFile.seek(posicaoFinal + j);
+			byte[] conteudo = new byte[10];
+			randomAccessFile.read(conteudo);
+			if(isConteudoVazio(conteudo)) {
+				
+				byte[] nomeBytes = new byte[8];
+				byte[] posicaoBytes = new byte[2];
+				System.arraycopy(conteudo, 0, nomeBytes, 0, nomeBytes.length);
+				System.arraycopy(conteudo, 8, posicaoBytes, 0, posicaoBytes.length);
+	//			if(diretorio){
+	//				removeDiretorio();
+	//			}
+				this.tiraArquivoDoDiretorio(new String(nomeBytes), posicaoBlocoARemover);
+				byte[] vazio = new byte[10];
+				randomAccessFile.seek(posicaoFinal + j);
+				randomAccessFile.write(vazio);
+			}
+		}
+//		randomAccessFile.seek(posicaoBlocoPai * 4000);
+//		for (int j = 0; j < 4000; j+=10) {
+//			byte[] conteudo = new byte[10];
+//			randomAccessFile.read(conteudo);
+//			if(isConteudoVazio(conteudo)) {
+//				byte[] nomeBytes = new byte[8];
+//				byte[] posicaoBytes = new byte[2];
+//				System.arraycopy(conteudo, 0, nomeBytes, 0, nomeBytes.length);
+//				System.arraycopy(conteudo, 8, posicaoBytes, 0, posicaoBytes.length);
+//				if(diretorios[i].equals(new String(nomeBytes).trim())) {
+//					randomAccessFile.seek(posicaoBlocoPai*4000 + j);
+//					byte[] vazio = new byte[10];
+//					randomAccessFile.write(vazio);
+//				}
+//			}
+//		}
+	}
+
+	public void removeDoBitmap(int posicao) throws IOException {
+		randomAccessFile.seek(4000);
+		int seekbit = 3999;
+		int resto = posicao % 8;
+		int conta = posicao/8;
+		byte[] b = new byte[1];
+		for (int i = 0;i <= conta; i++) {
+			b = new byte[1];
+			randomAccessFile.read(b);
+			seekbit++;
+		}
+		int x = (int) Math.pow(2, resto);
+		int bit = b[0] ^ x;
+		b[0] = (byte) bit;
+		randomAccessFile.seek(seekbit);
+		randomAccessFile.write(b);
+	}
+	
+	public static void main(String[] args) {  
+		byte b = 121;
+		byte c = (byte) (b ^ 32);
+		for (int i = 0; i < 8; i++) {
+			System.out.println(getBit(c, i));
+		}
+	}  
 }

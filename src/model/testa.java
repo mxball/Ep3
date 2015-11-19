@@ -44,6 +44,7 @@ public class testa {
 					disco.criaDiretorio(strings[1]);
 					break;
 				case "rmdir":
+					disco.removeDiretorio(strings[1]);
 					break;
 				case "imprime":
 					bitmap.imprimeBitmap();
@@ -58,6 +59,7 @@ public class testa {
 //					arvore.insereArquivo(strings[1]);
 					break;
 				case "rm":
+					fat.removeArquivo(strings[1]);
 					break;
 				case "ls":
 					fat.mostraDiretorio(strings[1]);
