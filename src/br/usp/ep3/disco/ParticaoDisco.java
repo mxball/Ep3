@@ -8,8 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import br.usp.ep3.memoria.Fat;
-
 public class ParticaoDisco {
 
 //	private int[] tabelaBlocos = new int[25000];
@@ -63,6 +61,7 @@ public class ParticaoDisco {
 	
 	public void escreveDir(byte[] conteudo, int posicaoConteudo) throws IOException {
 		int posicaoArquivo =  1 * 4000;
+		System.out.println(posicaoConteudo);
 		randomAccessFile.seek(posicaoArquivo);
 		byte[] lido = new byte[4000];
 		randomAccessFile.read(lido);
@@ -138,15 +137,15 @@ public class ParticaoDisco {
 		randomAccessFile.write(b);
 	}
 	
-	public int escreveBitmap() throws IOException {
-		randomAccessFile.seek(4000);
-		for (int i = 0; i < 4000; i++) {
+	public int procuraBitmapArquivo() throws IOException {
+		for (int i = 3124; i >= 0; i--) {
+			randomAccessFile.seek(4000 + i);
 			byte[] b = new byte[1];
 			randomAccessFile.read(b);
-			for(int j = 0; j < 8; j++) {
+			for (int j = 7; j >= 0; j--) {
 				int bit = getBit(b[0], j);
 				if(bit == 0) {
-					return (i)*8 + j+1;
+					return (i)*8 + j;
 				}
 			}
 		}
@@ -166,26 +165,16 @@ public class ParticaoDisco {
 			seekbit++;
 		}
 		int x = (int) Math.pow(2, resto);
+		System.out.println("conta = " + conta);
+		System.out.println("resto = " + resto);
+		System.out.println("seekbit = " + seekbit);
+		System.out.println("x = " + x);
 		int bit = b[0] | x;
 		b[0] = (byte) bit;
 		System.out.println("Posicao bit depois: " + bit);
 		System.out.println(Arrays.toString(b));
 		randomAccessFile.seek(seekbit);
 		randomAccessFile.write(b);
-	}
-
-	private static int getBit(byte b, int posicao) {  
-	    int mascara = 1 << posicao;  
-	    int retorno = b & mascara;  
-	    return retorno != 0 ? 1 : 0;  
-	}  
-	
-	public static void main(String[] args) {  
-	   byte b = -1;
-	   byte	 c = (byte) (b | 16);
-	   for(int  i = 0; i < 8;i++) {
-		   System.out.println(getBit(c, i));
-	   }
 	}
 
 	public void criaDiretorio(String caminhoCompleto) throws IOException {
@@ -248,5 +237,73 @@ public class ParticaoDisco {
 		}
 		int posicaoBloco = posicaoByte / 4000;
 		return posicaoBloco;
+	}
+
+	public void imprimeBitmap() throws IOException {
+		randomAccessFile.seek(4000);
+		byte[] b = new byte[3125];
+		randomAccessFile.read(b);
+		for (int i = 0; i < 3125; i++) {
+		   for(int  j = 0; j < 8;j++) {
+			   int a = (i*8)+j;
+			   System.out.print("bit[" + a + "] : " + getBit(b[i], j) + " ");
+		   }
+		   System.out.println();
+		}
+	}
+	
+	public int posicaoArquivo(String nomeDoArquivo, int blocoPai) throws IOException {
+		randomAccessFile.seek(blocoPai*4000);
+		System.out.println(blocoPai);
+		while(true) {
+			byte[] conteudo = new byte[10];
+			randomAccessFile.read(conteudo);
+			byte[] nomeBytes = new byte[8];
+			byte[] posicaoBytes = new byte[2];
+			System.arraycopy(conteudo, 0, nomeBytes, 0, nomeBytes.length);
+			System.arraycopy(conteudo, 8, posicaoBytes, 0, posicaoBytes.length);
+			if(nomeDoArquivo.equals(new String(nomeBytes).trim())) {
+				return getPosicaoDe2Bytes(posicaoBytes);
+			}
+			System.out.println(new String(nomeBytes));
+		}
+	}
+
+	private static int getBit(byte b, int posicao) {  
+	    int mascara = 1 << posicao;  
+	    int retorno = b & mascara;  
+	    return retorno != 0 ? 1 : 0;  
+	}  
+	
+	public static void main(String[] args) {  
+//	   byte b = 0 ;
+//	   byte	 c = (byte) (b | 128);
+//	   for(int  i = 0; i < 8;i++) {
+//		   System.out.println(getBit(c, i));
+//	   }
+		String teste = "/teste";
+		System.out.println(teste.split("/").length);
+	}
+
+	public void guardaNoDiretorio(String nomeArquivo, int primeiro,
+			int blocoPai) throws IOException {
+		randomAccessFile.seek(blocoPai*4000);
+		System.out.println(blocoPai);
+		int i = 0;
+		while(true) {
+			byte[] conteudo = new byte[10];
+			randomAccessFile.read(conteudo);
+			if(isConteudoVazio(conteudo)) {
+				byte[] nomeBytes = nomeArquivo.getBytes();
+				byte[] posicaoBytes = get2BytesDaPosicao(primeiro);
+				System.arraycopy(nomeBytes, 0, conteudo, 0, nomeBytes.length);
+				System.arraycopy(posicaoBytes, 0, conteudo, 8, posicaoBytes.length);
+				System.out.println(new String(nomeBytes));
+				randomAccessFile.seek(blocoPai*4000 + i);
+				randomAccessFile.write(conteudo);
+				return;
+			}
+			i = i+ 10;
+		}
 	}
 }

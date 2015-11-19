@@ -53,12 +53,13 @@ public class testa {
 				case "rmdir":
 					break;
 				case "imprime":
+					bitmap.imprimeBitmap();
 					break;
 				case "cp":
-					fat.armazenaArquivo("dem2.txt", bitmap);
+					fat.armazenaArquivo(strings[1], strings[2],bitmap);
 					break;
 				case "cat":
-//					fat.buscaArquivo(strings[1]);
+					fat.buscaArquivo(strings[1]);
 					break;
 				case "touch":
 //					arvore.insereArquivo(strings[1]);
@@ -77,7 +78,7 @@ public class testa {
 				case "sai":
 					superblock.salvaSuperblock(disco);
 					fat.escreveFat();
-					break;
+					return;
 				default:
 					break;
 			}

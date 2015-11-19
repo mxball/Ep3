@@ -51,7 +51,7 @@ public class Superblock {
 		if(disco.getNovo() == 1) {
 			String string = disco.leBloco(0);
 			String[] split = string.split(" ");
-			setTamanhoOcupado(Integer.parseInt(split[1]));
+
 			setNumedoDiretorios(Integer.parseInt(split[3]));
 			setNumeroArquivos(Integer.parseInt(split[5]));
 			setEspacoDesperdicado(Integer.parseInt(split[7]));

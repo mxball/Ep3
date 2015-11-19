@@ -24,18 +24,23 @@ public class Fat {
 		}
 	}
 	
-	public void armazenaArquivo(String nomeArquivo, Bitmap bitmap) throws SemEspacoException, IOException {
-		FileInputStream inputStream = new FileInputStream(nomeArquivo);
+	public void armazenaArquivo(String origem, String destino, Bitmap bitmap) throws SemEspacoException, IOException {
+		FileInputStream inputStream = new FileInputStream(origem);
 		int posicaoAnterior = -1;
 		byte[] bloco = new byte[4000];
 		int numeroBytes = inputStream.read(bloco);
 		int primeiro = -1;
+		String[] diretorios = destino.split("/");
+		String path = "";
+		for (int i = 1; i < diretorios.length - 2; i++) {
+			path += "/" + diretorios[i];
+		}
+		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
 		while(numeroBytes > 0) {
-			int posicaoLivre = bitmap.procuraPosicaoLivre();
+			int posicaoLivre = bitmap.procuraPosicaoLivreArquivo();
 			if(primeiro == -1) {
 				primeiro = posicaoLivre;
 			}else {
-				System.out.println("Proxima:" + posicaoLivre);
 			}
 			this.particaoDisco.escreveBloco(bloco, posicaoLivre);
 			bitmap.ocupaPosicao(posicaoLivre);
@@ -46,14 +51,20 @@ public class Fat {
 			bloco = new byte[4000];
 			numeroBytes = inputStream.read(bloco);
 		}
+		this.particaoDisco.guardaNoDiretorio(diretorios[diretorios.length-1], primeiro, posicaoBlocoPai);
 		this.tabelaFat[posicaoAnterior] = -2;
-		System.out.println("Escrevento " + nomeArquivo + " " + primeiro);
-		this.particaoDisco.escreveNoRoot(nomeArquivo, primeiro);
+		this.particaoDisco.escreveNoRoot(origem, primeiro);
 		inputStream.close();
 	}
 
 	public void buscaArquivo(String string) throws IOException {
-		int i = this.particaoDisco.leRoot(string);
+		String[] diretorios = string.split("/");
+		String path = "";
+		for (int i = 1; i < diretorios.length - 1; i++) {
+			path += "/" + diretorios[i];
+		}
+		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
+		int i = this.particaoDisco.posicaoArquivo(diretorios[diretorios.length-1], posicaoBlocoPai);
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(this.particaoDisco.leBloco(i));
 		while(this.tabelaFat[i] != -2) {

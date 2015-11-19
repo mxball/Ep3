@@ -24,8 +24,17 @@ public class Bitmap {
 		return bitmap;
 	}
 	
+	public int procuraPosicaoLivreArquivo() throws SemEspacoException, IOException {
+		int bitmap = disco.procuraBitmapArquivo();
+		return bitmap;
+	}
+	
 	public void ocupaPosicao(int posicao) throws IOException {
 		disco.ocupaBitmap(posicao);
+	}
+	
+	public void imprimeBitmap() throws IOException {
+		disco.imprimeBitmap();
 	}
 	
 }
