@@ -58,6 +58,15 @@ public class Fat {
 		inputStream.close();
 	}
 	
+	public void armazenaArquivoVazio(String destino, Bitmap bitmap, int posicaoBlocoPai) throws SemEspacoException, IOException {
+		byte[] bloco = new byte[4000];
+		int posicaoLivre = bitmap.procuraPosicaoLivreArquivo();
+		this.particaoDisco.escreveBloco(bloco, posicaoLivre);
+		bitmap.ocupaPosicao(posicaoLivre);
+		this.tabelaFat[posicaoLivre] = -2;
+		this.particaoDisco.guardaNoDiretorio(destino, posicaoLivre, 0, posicaoBlocoPai);
+	}
+	
 
 	public void removeArquivo(String destino) throws IOException {
 		String[] diretorios = destino.split("/");
@@ -134,6 +143,16 @@ public class Fat {
 		}
 		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
 		particaoDisco.listaConteudoDiretorio(posicaoBlocoPai);
+	}
+
+	public void touch(String string, Fat fat, Bitmap bitmap) throws IOException, SemEspacoException {
+		String[] diretorios = string.split("/");
+		String path = "";
+		for (int i = 1; i < diretorios.length-1; i++) {
+			path += "/" + diretorios[i];
+		}
+		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
+		this.particaoDisco.modificaDataAcesso(posicaoBlocoPai, diretorios[diretorios.length - 1], fat, bitmap);
 	}
 
 }

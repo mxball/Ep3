@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Calendar;
 
+import br.usp.ep3.Bitmap;
+import br.usp.ep3.exceptions.SemEspacoException;
 import br.usp.ep3.memoria.Fat;
 
 public class ParticaoDisco {
@@ -107,6 +109,7 @@ public class ParticaoDisco {
 		int seekbit = 3999;
 		int resto = posicao % 8;
 		int conta = posicao/8;
+		superblock.aumentaTamanhoOcupado();
 		byte[] b = new byte[1];
 		for (int i = 0;i <= conta; i++) {
 			b = new byte[1];
@@ -435,5 +438,37 @@ public class ParticaoDisco {
 		for (int i = 0; i < 8; i++) {
 			System.out.println(getBit(c, i));
 		}
+	}
+
+	public void modificaDataAcesso(int posicaoBlocoPai, String nomeDoArquivo, Fat fat, Bitmap bitmap) throws IOException, SemEspacoException {
+		randomAccessFile.seek(posicaoBlocoPai*4000);
+		int sek = 0;
+		int vazio = 0;
+		byte[] conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
+		for (int i = 0; i < 4000; i+=tamanhoEmBytesMaximoElementoNoDiretorio) {
+			randomAccessFile.read(conteudo);
+			if(!isConteudoVazio(conteudo)) {
+				byte[] nomeBytes = new byte[8];
+				System.arraycopy(conteudo, 0, nomeBytes, 0, (nomeBytes.length < 8) ? nomeBytes.length : 8);
+				System.out.println(new String(nomeBytes).trim());
+				if(nomeDoArquivo.equals(new String(nomeBytes).trim())) {
+					Calendar hoje = Calendar.getInstance();
+					byte[] data = getBytesDaData(hoje);
+					System.arraycopy(data, 0, conteudo, 24, 6);	
+					randomAccessFile.seek(posicaoBlocoPai*4000 + sek);
+					randomAccessFile.write(conteudo);
+					return;
+				}
+			}
+			else {
+				if(vazio == 0) {
+					vazio = sek;
+				}
+			}
+			conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
+			sek+=tamanhoEmBytesMaximoElementoNoDiretorio;
+		}
+		fat.armazenaArquivoVazio(nomeDoArquivo, bitmap, posicaoBlocoPai);
+		superblock.incrementaNumeroArquivos();
 	}  
 }

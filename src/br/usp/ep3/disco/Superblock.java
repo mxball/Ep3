@@ -47,6 +47,7 @@ public class Superblock {
 	public void setEspacoDesperdicado(int espacoDesperdicado) {
 		this.espacoDesperdicado = espacoDesperdicado;
 	}
+	
 	public void setInfoSuperblock(ParticaoDisco disco) throws IOException {
 		if(disco.isNovo()) {
 			setTamanhoOcupado(0);
@@ -62,7 +63,6 @@ public class Superblock {
 			setNumeroArquivos(Integer.parseInt(split[5]));
 			setEspacoDesperdicado(Integer.parseInt(split[7]));
 		}
-		
 	}
 	
 	public void salvaSuperblock(ParticaoDisco disco) throws IOException {
@@ -77,5 +77,24 @@ public class Superblock {
 	
 	public void incrementaNumeroDiretorios() {
 		this.numedoDiretorios++;
+	}
+
+	public void incrementaNumeroArquivos() {
+		this.numeroArquivos++;
+	}
+	
+	public void decrementaNumeroArquivos() {
+		this.numeroArquivos--;
+	}
+
+	public void getInfo() {
+		System.out.println("Numero de arquivos: " + this.numeroArquivos);
+		System.out.println("Numero de diretorios: " + this.numedoDiretorios);
+		System.out.println("Espaco livre: " + (250000 - this.tamanhoOcupado)*4 + "kb");
+		System.out.println("Espaco desperdicado: " + this.espacoDesperdicado);
+	}
+	
+	public void aumentaTamanhoOcupado() {
+		this.tamanhoOcupado++;
 	}
 }

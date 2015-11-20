@@ -38,7 +38,10 @@ public class testa {
 						fat.inicializaFat();
 					}
 					break;
-				case "unmount":;
+				case "unmount":
+					superblock.salvaSuperblock(disco);
+					fat.escreveFat();
+					disco.fechaArquivo();
 					break;
 				case "mkdir":
 					disco.criaDiretorio(strings[1]);
@@ -48,25 +51,26 @@ public class testa {
 					break;
 				case "cp":
 					fat.armazenaArquivo(strings[1], strings[2],bitmap);
+					superblock.incrementaNumeroArquivos();
 					break;
 				case "cat":
 					fat.buscaArquivo(strings[1]);
 					break;
 				case "touch":
-//					arvore.insereArquivo(strings[1]);
+					fat.touch(strings[1],fat,bitmap);
 					break;
 				case "rm":
 					fat.removeArquivo(strings[1]);
+					superblock.decrementaNumeroArquivos();
 					break;
 				case "ls":
 					fat.mostraDiretorio(strings[1]);
 				case "find":
 					break;
 				case "df":
+					superblock.getInfo();
+					break;
 				case "sai":
-					superblock.salvaSuperblock(disco);
-					fat.escreveFat();
-					disco.fechaArquivo();
 					return;
 				default:
 					break;
