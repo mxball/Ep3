@@ -1,13 +1,9 @@
-package br.usp.ep3.disco;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Calendar;
-
-import br.usp.ep3.Bitmap;
-import br.usp.ep3.exceptions.SemEspacoException;
-import br.usp.ep3.memoria.Fat;
 
 public class ParticaoDisco {
 

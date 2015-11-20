@@ -1,13 +1,7 @@
-package model;
+
 
 import java.io.IOException;
 import java.util.Scanner;
-
-import br.usp.ep3.Bitmap;
-import br.usp.ep3.disco.ParticaoDisco;
-import br.usp.ep3.disco.Superblock;
-import br.usp.ep3.exceptions.SemEspacoException;
-import br.usp.ep3.memoria.Fat;
 
 public class testa {
 	

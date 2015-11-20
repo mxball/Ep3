@@ -1,9 +1,6 @@
-package br.usp.ep3;
+
 
 import java.io.IOException;
-
-import br.usp.ep3.disco.ParticaoDisco;
-import br.usp.ep3.exceptions.SemEspacoException;
 
 public class Bitmap {
 

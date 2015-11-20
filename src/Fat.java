@@ -1,11 +1,8 @@
-package br.usp.ep3.memoria;
 
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import br.usp.ep3.Bitmap;
-import br.usp.ep3.disco.ParticaoDisco;
-import br.usp.ep3.exceptions.SemEspacoException;
 
 public class Fat {
 
@@ -25,7 +22,7 @@ public class Fat {
 	}
 	
 	public void armazenaArquivo(String origem, String destino, Bitmap bitmap) throws SemEspacoException, IOException {
-		FileInputStream inputStream = new FileInputStream(origem);
+		FileInputStream inputStream = new FileInputStream(new File(origem));
 		int tamanhoEmBytes = inputStream.available(); //NÃO MOVA ISSO DE LUGAR 
 		int posicaoAnterior = -1;
 		byte[] bloco = new byte[4000];
