@@ -44,7 +44,7 @@ public class testa {
 					disco.criaDiretorio(strings[1]);
 					break;
 				case "rmdir":
-					disco.removeDiretorio(strings[1]);
+					disco.removeDiretorio(strings[1], fat);
 					break;
 				case "cp":
 					fat.armazenaArquivo(strings[1], strings[2],bitmap);

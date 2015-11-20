@@ -73,7 +73,7 @@ public class Fat {
 			this.tabelaFat[i] = -1;
 			this.particaoDisco.removeDoBitmap(i);
 			i = j;
-			System.out.println(i + "+" + j);
+			System.out.println(i + "+" + j + "");
 			this.particaoDisco.limpaBloco(j);
 		}
 		this.tabelaFat[i] = -1;
