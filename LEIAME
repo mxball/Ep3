@@ -1,0 +1,23 @@
+Para compilar o programa execute 
+	sh compiler.sh 
+que se encontra dentro da pasta /src
+O compiler já rodara o programa caso não queira recompilar e só rodar o ep execute
+	java -jar ep3.jar
+que é gerado junto com o compiler.sh
+
+Informacoes importantes:
+Nomes de arquivos e diretorios maximo de 8 caracteres
+Os caminhos dentro do sistema devem sempre comecar com "/"
+ou seja para criar um diretorio
+	mkdir /teste
+isso criara a pasta teste no root, para arquivos a mesma coisa
+O superbloco so armazena o numero de diretorios, numero de arquivos,
+tamanho ocupado e tamanho desperdicado.
+Como o superbloco, o bitmap, o fat e o root estão sempre na mesma posicao
+essa informacao nao eh guarada no superbloco.
+	superbloco no 1 bloco 
+	bitmap no 2 bloco
+	fata do 3 ao 14
+	root no bloco 15
+Apenas o fat eh carregado na memoria, e apos o unmount as informacoes 
+sao jogadas para o disco
