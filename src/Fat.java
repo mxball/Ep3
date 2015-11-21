@@ -73,7 +73,7 @@ public class Fat {
 		}
 		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
 		int i = this.particaoDisco.tiraArquivoDoDiretorio(diretorios[diretorios.length-1], posicaoBlocoPai);
-		while(this.tabelaFat[24999] != -2) {
+		while(this.tabelaFat[i] != -2) {
 			int j = this.tabelaFat[i];
 			i = this.tabelaFat[i];
 			this.particaoDisco.removeDoBitmap(i);
