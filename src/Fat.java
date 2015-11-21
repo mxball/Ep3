@@ -9,7 +9,6 @@ public class Fat {
 	private int[] tabelaFat = new int[25000];
 	private ParticaoDisco particaoDisco;
 	
-	
 	public Fat(ParticaoDisco particao) throws IOException {
 		this.particaoDisco = particao;
 		if(particao.isNovo()) {
@@ -21,13 +20,15 @@ public class Fat {
 		}
 	}
 	
-	public void armazenaArquivo(String origem, String destino, Bitmap bitmap) throws SemEspacoException, IOException {
+	public void armazenaArquivo(String origem, String destino, Bitmap bitmap, Superblock superblock) throws SemEspacoException, IOException {
 		FileInputStream inputStream = new FileInputStream(new File(origem));
 		int tamanhoEmBytes = inputStream.available(); //NÃO MOVA ISSO DE LUGAR 
 		int posicaoAnterior = -1;
 		byte[] bloco = new byte[4000];
 		int numeroBytes = inputStream.read(bloco);
 		int primeiro = -1;
+		superblock.aumentaTamanhoDesperdicado(4-(numeroBytes%4));
+		
 		String[] diretorios = destino.split("/");
 		String path = "";
 		for (int i = 1; i < diretorios.length - 1; i++) {
@@ -35,11 +36,11 @@ public class Fat {
 			System.out.println(diretorios[i]);
 		}
 		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
+		
 		while(numeroBytes > 0) {
 			int posicaoLivre = bitmap.procuraPosicaoLivreArquivo();
 			if(primeiro == -1) {
 				primeiro = posicaoLivre;
-			}else {
 			}
 			this.particaoDisco.escreveBloco(bloco, posicaoLivre);
 			bitmap.ocupaPosicao(posicaoLivre);
@@ -64,7 +65,6 @@ public class Fat {
 		this.particaoDisco.guardaNoDiretorio(destino, posicaoLivre, 0, posicaoBlocoPai);
 	}
 	
-
 	public void removeArquivo(String destino) throws IOException {
 		String[] diretorios = destino.split("/");
 		String path = "";
@@ -73,13 +73,11 @@ public class Fat {
 		}
 		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
 		int i = this.particaoDisco.tiraArquivoDoDiretorio(diretorios[diretorios.length-1], posicaoBlocoPai);
-		this.particaoDisco.limpaBloco(i);
-		while(this.tabelaFat[i] != -2) {
+		while(this.tabelaFat[24999] != -2) {
 			int j = this.tabelaFat[i];
-			this.tabelaFat[i] = -1;
+			i = this.tabelaFat[i];
 			this.particaoDisco.removeDoBitmap(i);
 			i = j;
-			System.out.println(i + "+" + j + "");
 			this.particaoDisco.limpaBloco(j);
 		}
 		this.tabelaFat[i] = -1;
@@ -142,7 +140,7 @@ public class Fat {
 		particaoDisco.listaConteudoDiretorio(posicaoBlocoPai);
 	}
 
-	public void touch(String string, Fat fat, Bitmap bitmap) throws IOException, SemEspacoException {
+	public void touch(String string, Fat fat, Bitmap bitmap, Superblock superblock) throws IOException, SemEspacoException {
 		String[] diretorios = string.split("/");
 		String path = "";
 		for (int i = 1; i < diretorios.length-1; i++) {
@@ -150,6 +148,7 @@ public class Fat {
 		}
 		int posicaoBlocoPai = particaoDisco.buscaPosicaoDiretorio(path);
 		this.particaoDisco.modificaDataAcesso(posicaoBlocoPai, diretorios[diretorios.length - 1], fat, bitmap);
+		superblock.aumentaTamanhoDesperdicado(4);
 	}
 
 }

@@ -97,4 +97,16 @@ public class Superblock {
 	public void aumentaTamanhoOcupado() {
 		this.tamanhoOcupado++;
 	}
+
+	public void decrementaTamanhoOcupado() {
+		this.tamanhoOcupado--;
+	}
+	
+	public void aumentaTamanhoDesperdicado(int i) {
+		this.espacoDesperdicado +=i;
+	}
+	
+	public void decrementaTamanhoDesperdicado(int i) {
+		this.espacoDesperdicado -=i;
+	}
 }

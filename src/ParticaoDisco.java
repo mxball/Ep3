@@ -251,8 +251,6 @@ public class ParticaoDisco {
 	
 	public int tiraArquivoDoDiretorio(String nomeDoArquivo, int blocoPai) throws IOException {
 		randomAccessFile.seek(blocoPai*4000);
-		System.out.println(blocoPai);
-		System.out.println(nomeDoArquivo);
 		int seek = blocoPai*4000;
 		while(true) {
 			byte[] conteudo = new byte[tamanhoEmBytesMaximoElementoNoDiretorio];
@@ -260,7 +258,7 @@ public class ParticaoDisco {
 			byte[] nomeBytes = new byte[8];
 			byte[] posicaoBytes = new byte[2];
 			System.arraycopy(conteudo, 0, nomeBytes, 0, nomeBytes.length);
-			System.arraycopy(conteudo, 8, posicaoBytes, 0, posicaoBytes.length);
+			System.arraycopy(conteudo, 30, posicaoBytes, 0, posicaoBytes.length);
 			if(nomeDoArquivo.equals(new String(nomeBytes).trim())) {
 				int posicaoDe2Bytes = getPosicaoDe2Bytes(posicaoBytes);
 				randomAccessFile.seek(seek);
@@ -411,6 +409,7 @@ public class ParticaoDisco {
 	}
 
 	public void removeDoBitmap(int posicao) throws IOException {
+		superblock.decrementaTamanhoOcupado();
 		randomAccessFile.seek(4000);
 		int seekbit = 3999;
 		int resto = posicao % 8;
@@ -424,6 +423,8 @@ public class ParticaoDisco {
 		int x = (int) Math.pow(2, resto);
 		int bit = b[0] ^ x;
 		b[0] = (byte) bit;
+		for (int i = 0; i < 8; i++) {
+		}
 		randomAccessFile.seek(seekbit);
 		randomAccessFile.write(b);
 	}

@@ -44,14 +44,14 @@ public class testa {
 					disco.removeDiretorio(strings[1], fat);
 					break;
 				case "cp":
-					fat.armazenaArquivo(strings[1], strings[2],bitmap);
+					fat.armazenaArquivo(strings[1], strings[2],bitmap, superblock);
 					superblock.incrementaNumeroArquivos();
 					break;
 				case "cat":
 					fat.buscaArquivo(strings[1]);
 					break;
 				case "touch":
-					fat.touch(strings[1],fat,bitmap);
+					fat.touch(strings[1],fat,bitmap, superblock);
 					break;
 				case "rm":
 					fat.removeArquivo(strings[1]);
